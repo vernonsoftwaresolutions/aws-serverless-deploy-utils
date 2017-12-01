@@ -1,6 +1,6 @@
 {
   "name": "aws-serverless-deploy-utils",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Utilities to help with aws serverless deployments using SAM",
   "main": "index.js",
   "scripts": {
@@ -34,9 +34,9 @@
     "include": [],
     "exclude": [],
     "reporter": [
-        "lcov",
-        "text",
-        "html"
+      "lcov",
+      "text",
+      "html"
     ]
   }
 }
