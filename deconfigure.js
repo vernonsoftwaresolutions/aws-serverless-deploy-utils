@@ -7,12 +7,16 @@ const fs = require('fs')
 const modifyFiles = require('./utils').modifyFiles
   
 module.exports.run = function(configTemplate, packageFile, proxy, cloudformation){
-    const packageJson = require(packageFile)
+    
+    const packageJson = JSON.parse(fs.readFileSync(packageFile, 'utf8'))
 
     const config = packageJson.config
     
     //todo-refactor to utils
     packageJson.config = configTemplate;
+
+    console.log(config)
+
     if(packageFile){
         fs.writeFileSync(packageFile,JSON.stringify(packageJson, null, 4),'utf8')
     }
@@ -22,7 +26,7 @@ module.exports.run = function(configTemplate, packageFile, proxy, cloudformation
     if(cloudformation){
         modifyFile(cloudformation, config)
     }
-   
+    
 }
 //todo-this all still needs to be refactored
 const modifyFile = function(file, config){
@@ -47,5 +51,8 @@ const modifyFile = function(file, config){
     }, {
         regexp: new RegExp(config.cloudFormationStackName, 'g'),
         replacement: 'YOUR_STACK_NAME'
+    }, {
+        regexp: new RegExp(config.cfStage, 'g'),
+        replacement: 'YOUR_STAGE'
     }])
 }
