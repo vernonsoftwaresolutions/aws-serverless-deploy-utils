@@ -1,0 +1,177 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Express Application/API powered by API Gateway and Lambda
+
+Parameters:
+
+  dnsname:
+    Type: String
+    Description: Name of Moodle API route 53 entry to use for target
+
+  hostedzonename:
+    Type: String
+    Description: Name of existing route 53 hosted zone name
+
+  cfStage:
+    Type: String
+    AllowedValues:
+      - dev
+      - stage
+      - prod
+    Default: dev
+    Description: stage that can be added to resource names
+
+Resources:
+###############################################
+## DNS AND CERTIFICATE DEFINITIONS
+##
+###############################################
+
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Sub ${cfStage}.${dnsname}
+
+  DomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      CertificateArn: !Ref Certificate
+      DomainName: !Sub ${cfStage}.${dnsname}
+
+  LambdaDNS:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName:
+        Ref: hostedzonename
+      Comment: Zone apex alias targeted to ApiGateway
+      RecordSets:
+      - Name: !Sub ${cfStage}.${dnsname}.
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z2FDTNDATAQYW2 # This is hardcoded for all CloudFormation templates
+          DNSName: !GetAtt DomainName.DistributionDomainName
+###############################################
+## API GATEWAY AND LAMBDA FUNCTION DEFINITIONS
+##
+###############################################
+  YOUR_SERVERLESS_EXPRESS_LAMBDA_FUNCTION_NAME:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: lambda.handler
+      MemorySize: 1024
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: nodejs6.10
+      Timeout: 30
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref cfStage
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /
+            Method: ANY
+        ProxyApiGreedy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /{proxy+}
+            Method: ANY
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      DefinitionUri: ./simple-proxy-api.yaml
+      #StageName: DUMMY
+      StageName: !Ref cfStage
+      Variables:
+        YOUR_SERVERLESS_EXPRESS_LAMBDA_FUNCTION_NAME: !Ref YOUR_SERVERLESS_EXPRESS_LAMBDA_FUNCTION_NAME
+  
+  UrlMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    DependsOn: 
+      - ApiGateway
+    Properties:
+      DomainName: !Ref DomainName
+      RestApiId: !Ref ApiGateway
+      Stage: !Ref cfStage
+
+  # Deployment:
+  #   Type: AWS::ApiGateway::Deployment
+  #   Properties:
+  #     Description: !Sub Deployment for ${stage}
+  #     RestApiId: !Ref ApiGateway
+  #     StageName: !Ref stage
+
+  # ApiGatewayStage:
+  #   Type: AWS::ApiGateway::Stage
+  #   Properties:
+  #     StageName: !Ref stage
+  #     RestApiId: !Ref ApiGateway
+  #     DeploymentId: !Ref Deployment
+  #     Variables:
+  #       env: !Ref stage
+  #     #note-this requires api gateway to have appropriate role
+  #     MethodSettings:
+  #       - DataTraceEnabled: true
+  #         HttpMethod: "*"
+  #         LoggingLevel: INFO
+  #         ResourcePath: "/*"
+  #         MetricsEnabled: true
+###############################################
+## LAMBDA PERMISSION ROLES
+##
+###############################################
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
+
+  LambdaApiGatewayExecutionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt YOUR_SERVERLESS_EXPRESS_LAMBDA_FUNCTION_NAME.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join
+        - ''
+        - - 'arn:aws:execute-api:'
+          - !Ref AWS::Region
+          - ":"
+          - !Ref AWS::AccountId
+          - ":"
+          - !Ref ApiGateway
+          - "/*/*"
+
+
+Outputs:
+  LambdaFunctionConsoleUrl:
+    Description: Console URL for the Lambda Function.
+    Value: !Join
+      - ''
+      - - https://
+        - !Ref AWS::Region
+        - ".console.aws.amazon.com/lambda/home?region="
+        - !Ref AWS::Region
+        - "#/functions/"
+        - !Ref YOUR_SERVERLESS_EXPRESS_LAMBDA_FUNCTION_NAME

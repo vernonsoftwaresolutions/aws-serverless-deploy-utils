@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Utilities to help with aws serverless deployments using SAM",
   "main": "index.js",
+  "bin": {
+    "aws-deploy-utils": "./index.js"
+  },
   "scripts": {
     "test": "npm run cover",
     "cover": "nyc npm run test",
@@ -38,5 +41,8 @@
       "text",
       "html"
     ]
+  },
+  "dependencies": {
+    "commander": "^2.12.2"
   }
 }
