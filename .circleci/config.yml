@@ -4,8 +4,6 @@ jobs:
     working_directory: ~/MoodleSites
     docker:
       - image: circleci/node:argon-stretch-browsers
-    environment:
-      - BUCKET_NAME: "moodle.sites.lambda.deployment"
     steps:
       - checkout
       - run:
@@ -21,9 +19,9 @@ jobs:
           paths:
             - ./node_modules
 
-      - run:
-          name: code-coverage
-          command: 'npm run cover'
+    #   - run:
+    #       name: code-coverage
+    #       command: 'npm run cover'
     
       - run:
           name: increment version by patch
