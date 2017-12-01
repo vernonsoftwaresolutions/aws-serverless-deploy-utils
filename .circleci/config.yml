@@ -43,7 +43,7 @@ jobs:
       
       - run:
           name: install npm login
-          command: 'npm install -g npm-cli-login'
+          command: 'sudp npm install -g npm-cli-login'
 
       - run:
           name: npm login
