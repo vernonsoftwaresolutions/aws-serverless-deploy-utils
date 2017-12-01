@@ -1,6 +1,6 @@
 {
   "name": "aws-serverless-deploy-utils",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Utilities to help with aws serverless deployments using SAM",
   "main": "index.js",
   "scripts": {
