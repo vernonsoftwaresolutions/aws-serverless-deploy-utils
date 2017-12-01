@@ -32,6 +32,18 @@ jobs:
       - run:
           name: package tar ball
           command: 'npm pack'
+      
+      - run:
+          name: install npm login
+          command: 'npm install -g npm-cli-login'
+
+      - run:
+          name: npm login
+          command: 'npm-cli-login'
+
+      - run:
+          name: npm public
+          command: 'npm publish'
 
       - store_artifacts:
           path: test-results.xml
