@@ -22,7 +22,10 @@ jobs:
     #   - run:
     #       name: code-coverage
     #       command: 'npm run cover'
-    
+      -run:
+          name: clean git
+          command: git add . && git commit.
+          
       - run:
           name: increment version by patch
           command: 'npm version patch'
