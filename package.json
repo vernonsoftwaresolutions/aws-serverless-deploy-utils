@@ -7,7 +7,6 @@
     "test": "npm run cover",
     "cover": "nyc npm run test",
     "check-coverage": "nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100"
-    
   },
   "pre-commit": [
     "lint",
@@ -27,5 +26,17 @@
   "bugs": {
     "url": "https://github.com/vernonsoftwaresolutions/aws-serverless-deploy-utils/issues"
   },
-  "homepage": "https://github.com/vernonsoftwaresolutions/aws-serverless-deploy-utils#readme"
+  "homepage": "https://github.com/vernonsoftwaresolutions/aws-serverless-deploy-utils#readme",
+  "devDependencies": {
+    "nyc": "^11.3.0"
+  },
+  "nyc": {
+    "include": [],
+    "exclude": [],
+    "reporter": [
+        "lcov",
+        "text",
+        "html"
+    ]
+  }
 }
