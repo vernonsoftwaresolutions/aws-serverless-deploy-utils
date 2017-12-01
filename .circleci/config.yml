@@ -25,6 +25,13 @@ jobs:
     #   - run:
     #       name: clean git
     #       command: 'git add . && git commit'
+      - run:
+          name: add git user
+          command: 'git config --global user.email ${GIT_EMAIL}'
+
+      - run:
+          name: add git user
+          command: 'git config --global user.name ${GIT_USER}'
 
       - run:
           name: increment version by patch
