@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/MoodleSites
+    working_directory: ~/aws-serverless-deploy-utils
     docker:
       - image: circleci/node:argon-stretch-browsers
     steps:
