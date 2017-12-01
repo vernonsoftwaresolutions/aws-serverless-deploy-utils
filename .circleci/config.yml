@@ -24,7 +24,7 @@ jobs:
         #       command: 'npm run cover'
       - run:
           name: clean git
-          command: 'git add . && git commit.'
+          command: 'git add . && git commit'
 
       - run:
           name: increment version by patch
