@@ -1,0 +1,31 @@
+{
+  "name": "aws-serverless-deploy-utils",
+  "version": "0.0.1",
+  "description": "Utilities to help with aws serverless deployments using SAM",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run cover",
+    "cover": "nyc npm run test",
+    "check-coverage": "nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100"
+    
+  },
+  "pre-commit": [
+    "lint",
+    "cover"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vernonsoftwaresolutions/aws-serverless-deploy-utils.git"
+  },
+  "keywords": [
+    "aws",
+    "serverless",
+    "SAM"
+  ],
+  "author": "larse514",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vernonsoftwaresolutions/aws-serverless-deploy-utils/issues"
+  },
+  "homepage": "https://github.com/vernonsoftwaresolutions/aws-serverless-deploy-utils#readme"
+}
